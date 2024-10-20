@@ -36,6 +36,7 @@ def generate_sine_signal(fs, signal_freq, duration, noise_level=None):
     t = np.linspace(0, duration, int(fs * duration), endpoint=False).astype(np.float32)  
     x_real = np.cos(2 * np.pi * signal_freq * t).astype(np.float32)    
     x_imag = np.zeros_like(x_real)  # Set imaginary part to 0
+    x_imag = np.sin(2 * np.pi * signal_freq * t).astype(np.float32)
     signal = np.column_stack((x_real, x_imag))
 
     if noise_level is not None:
@@ -48,6 +49,7 @@ def generate_chirp_signal(fs, f_start, f_end, duration, noise_level=None):
     t = np.linspace(0, duration, int(fs * duration), endpoint=False).astype(np.float32) 
     x_real = np.cos(2 * np.pi * (f_start + (f_end - f_start) * t / (2 * duration)) * t).astype(np.float32)   
     x_imag = np.sin(2 * np.pi * (f_start + (f_end - f_start) * t / (2 * duration)) * t).astype(np.float32)   
+    x_imag = np.zeros_like(x_real)
     signal = np.column_stack((x_real, x_imag))
 
     if noise_level is not None:
@@ -124,8 +126,8 @@ def main(signal_type='sine', noise_level=None, cfar_params=None):
     cfar_result = load_csv_data(os.path.join(data_dir, OUTPUT_CSV))
 
     # Separate the squared magnitude and CFAR threshold
-    squared_magnitude = cfar_result[:, 0]
-    cfar_threshold = cfar_result[:, 1]
+    squared_magnitude = np.fft.fftshift(cfar_result[:, 0])
+    cfar_threshold = np.fft.fftshift(cfar_result[:, 1])
 
     # Generate frequency bins for plotting
     frequencies = np.fft.fftshift(np.fft.fftfreq(NDFT, 1 / FS))
@@ -135,6 +137,4 @@ def main(signal_type='sine', noise_level=None, cfar_params=None):
 
 if __name__ == "__main__":
     Pfa = 1e-3 # howto calculate the Pfa?
-    T = -np.log(Pfa)
-    print(T)
-    main(signal_type='sine', noise_level=0.9, cfar_params=[T, 20, 5])
+    main(signal_type='chirp', noise_level=0.9, cfar_params=[Pfa, 20, 5])

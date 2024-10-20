@@ -47,7 +47,9 @@ void compute_squared_magnitude(Complex *inputDFT, float *squared_magnitude, int 
 
 // Cell Averaging CFAR
 void apply_cfar(float *squared_magnitude, float *cfar_threshold, int NDFT, int N_ref, int N_guard, float threshold_factor) {
+    float alpha = -logf(threshold_factor);
     for (int i = 0; i < NDFT; i++) {
+
         int num_ref_cells = 0;
         float sum_ref_cells = 0.0;
 
@@ -67,8 +69,13 @@ void apply_cfar(float *squared_magnitude, float *cfar_threshold, int NDFT, int N
             }
         }
 
-        // CFAR threshold
-        cfar_threshold[i] = (num_ref_cells > 0) ? (sum_ref_cells / num_ref_cells) * threshold_factor : 0.0;
+        // CFAR threshold calculation
+        if (num_ref_cells > 0) {
+            float avg_noise_power = sum_ref_cells / num_ref_cells;
+            cfar_threshold[i] = avg_noise_power * alpha;  // Apply the alpha factor
+        } else {
+            cfar_threshold[i] = 0.0;  // No valid reference cells, set threshold to 0
+        }
     }
 }
 

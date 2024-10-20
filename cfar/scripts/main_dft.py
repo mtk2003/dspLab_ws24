@@ -28,7 +28,7 @@ def generate_sine_signal(fs, signal_freq, duration):
     t = np.linspace(0, duration, int(fs * duration), endpoint=False).astype(np.float32)  
     x_real = np.cos(2 * np.pi * signal_freq * t).astype(np.float32)    
     x_imag = np.sin(2 * np.pi * signal_freq * t).astype(np.float32)  
-    x_imag = np.zeros_like(x_real)  
+    #x_imag = np.zeros_like(x_real)  
     return np.column_stack((x_real, x_imag))
 
 # Generate the real and imaginary chirp signal
@@ -111,4 +111,4 @@ def main(signal_type='sine'):
     plot_dft_magnitude(frequencies, magnitude, fft_magnitude)
 
 if __name__ == "__main__":
-    main(signal_type='chirp')  # You can change to 'sine' or 'chirp'
+    main(signal_type='sine')  # You can change to 'sine' or 'chirp'
