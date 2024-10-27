@@ -36,7 +36,7 @@ def generate_sine_signal(fs, signal_freq, duration, noise_level=None):
     t = np.linspace(0, duration, int(fs * duration), endpoint=False).astype(np.float32)  
     x_real = np.cos(2 * np.pi * signal_freq * t).astype(np.float32)    
     x_imag = np.zeros_like(x_real)  # Set imaginary part to 0
-    x_imag = np.sin(2 * np.pi * signal_freq * t).astype(np.float32)
+    #x_imag = np.sin(2 * np.pi * signal_freq * t).astype(np.float32)
     signal = np.column_stack((x_real, x_imag))
 
     if noise_level is not None:
@@ -49,7 +49,7 @@ def generate_chirp_signal(fs, f_start, f_end, duration, noise_level=None):
     t = np.linspace(0, duration, int(fs * duration), endpoint=False).astype(np.float32) 
     x_real = np.cos(2 * np.pi * (f_start + (f_end - f_start) * t / (2 * duration)) * t).astype(np.float32)   
     x_imag = np.sin(2 * np.pi * (f_start + (f_end - f_start) * t / (2 * duration)) * t).astype(np.float32)   
-    #x_imag = np.zeros_like(x_real)
+    x_imag = np.zeros_like(x_real)
     signal = np.column_stack((x_real, x_imag))
 
     if noise_level is not None:
@@ -98,9 +98,9 @@ def plot_clusters(frequencies, result_data, fft_magnitude):
     plt.colorbar(scatter, label="Cluster Label")
     
     # Add plot details
-    plt.title('DFT and FFT Squared Magnitude with Cluster Labels')
+    plt.title('DFT Squared Magnitude with Cluster Labels')
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Magnitude (dB)')
+    plt.ylabel('Magnitude (squared linear)')
     plt.grid(True)
     plt.legend()
     plt.show()
@@ -142,7 +142,7 @@ def main(signal_type='sine', operation='kmeans',noise_level=None, num_clusters=3
     plot_clusters(frequencies, result_data, fft_magnitude)
 
 if __name__ == "__main__":
-    main(signal_type='sine', operation='kmeans',noise_level=0.4, num_clusters=2, max_iter=10)
+    main(signal_type='chirp', operation='kmeans',noise_level=0.1, num_clusters=2, max_iter=10)
 
 # Debug
 #ul, counts = np.unique(result_data[:,1], return_counts=True)
