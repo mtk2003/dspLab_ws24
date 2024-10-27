@@ -61,6 +61,26 @@ def generate_chirp_signal(fs, f_start, f_end, duration, noise_level=None):
 def save_signal_to_csv(signal, filepath):
     np.savetxt(filepath, signal, delimiter=',')
 
+# Call GDB for combined debugging
+def call_c_program_with_gdb(executable, input_csv, output_csv, operation, NDFT, num_clusters=None, max_iter=None):
+    executable_path = os.path.join(bin_dir, executable)
+    input_path = os.path.join(data_dir, input_csv)
+    output_path = os.path.join(data_dir, output_csv)
+
+    # Base command with gdb and executable arguments
+    command = ["gdb", "--args", executable_path, str(NDFT), input_path, output_path, operation]
+    
+    # Add extra arguments for K-means operation if specified
+    if operation == 'kmeans':
+        command.extend([str(num_clusters), str(max_iter)])
+
+    # Run gdb in a subprocess
+    try:
+        subprocess.run(command)
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred while running {executable} in gdb: {e}")
+        raise
+
 # Call the C executable for the specified operation (e.g., DFT, K-means)
 def call_c_program(executable, input_csv, output_csv, operation, NDFT, num_clusters=None, max_iter=None):
     executable_path = os.path.join(bin_dir, executable)
@@ -127,7 +147,7 @@ def main(signal_type='sine', operation='kmeans',noise_level=None, num_clusters=3
 
     # Call the C program for the specified operation (kmeans in this case)
     call_c_program(C_PROGRAM_EXECUTABLE, INPUT_CSV, OUTPUT_CSV, operation, NDFT, num_clusters, max_iter)
-
+    
     # Load the clustering result from output.csv
     result_data = load_csv_data(os.path.join(data_dir, OUTPUT_CSV))
 

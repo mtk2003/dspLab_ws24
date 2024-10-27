@@ -58,7 +58,7 @@ int save_cfar_to_csv(const char *filename, float *squared_dft, float *cfar_thres
 
 // Save kmenas output to CSV, First column are the DFT magnitude values (either linear squared or dB) and the second
 // column are the corresponding labels
-int save_kmeans_to_csv(const char *filename, float *data, int *labels, int N) {
+int save_clusters_to_csv(const char *filename, float *data, int *labels, int N) {
     FILE *file = fopen(filename, "w");
     if (!file) {
         printf("Error opening file: %s\n", filename);

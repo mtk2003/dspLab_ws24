@@ -284,7 +284,7 @@ int main(int argc, char *argv[]) {
         compute_clusters(magnitude, NDFT, numClusters, max_iter, labels, centroids);
 
         // Save the K-means results to CSV
-        save_kmeans_to_csv(output_file, magnitude, labels, NDFT);
+        save_clusters_to_csv(output_file, magnitude, labels, NDFT);
 
         // Free memory for K-means
         free(magnitude);
