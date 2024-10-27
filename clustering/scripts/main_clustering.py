@@ -142,7 +142,7 @@ def main(signal_type='sine', operation='kmeans',noise_level=None, num_clusters=3
     plot_clusters(frequencies, result_data, fft_magnitude)
 
 if __name__ == "__main__":
-    main(signal_type='chirp', operation='kmeans',noise_level=0.1, num_clusters=2, max_iter=10)
+    main(signal_type='chirp', operation='kmeans',noise_level=0.0, num_clusters=2, max_iter=10)
 
 # Debug
 #ul, counts = np.unique(result_data[:,1], return_counts=True)

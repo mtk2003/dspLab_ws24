@@ -10,52 +10,65 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-// K-means clustering function
-void k_means(float *data, int N, int k, int max_iter, int *labels, float *centroids) {
-    int changes;
+// K-means clustering
+void compute_clusters(float *data, int NDFT, int numClusters, int maxIterations, int *labels, float *centroids) {
+    int changes;  // Track number of changes in each iteration
+    float minDist, dist;  // Distances for finding the nearest centroid
+    int labelMatch;  // Stores the closest centroid for a data point
 
-    // Initialize centroids with the first k data points
-    for (int i = 0; i < k; i++) {
-        centroids[i] = data[i];
+    // Arrays to store sum and count of points in each cluster for centroid update
+    float sumCentroids[numClusters];
+    int numPointsPerCentroid[numClusters];
+
+    // Step 1: Initialize centroids with the first `numClusters` points
+    for (size_t j = 0; j < numClusters; j++) {
+        centroids[j] = data[j];
     }
 
-    for (int iter = 0; iter < max_iter; iter++) {
-        changes = 0;
+    // Main loop: Iterate up to `maxIterations` times
+    for (size_t k = 0; k < maxIterations; k++) {
+        changes = 0;  // Reset changes counter
 
-        // Assign each point to the nearest centroid
-        for (int i = 0; i < N; i++) {
-            int best_cluster = 0;
-            float min_dist = fabs(data[i] - centroids[0]);
-            for (int j = 1; j < k; j++) {
-                float dist = fabs(data[i] - centroids[j]);
-                if (dist < min_dist) {
-                    min_dist = dist;
-                    best_cluster = j;
+        // Step 2: Assign each data point to the nearest centroid
+        for (size_t i = 0; i < NDFT; i++) {
+            minDist = fabs(data[i] - centroids[0]);  // Distance to the first centroid
+            labelMatch = 0;  // Start with the first centroid as the closest
+
+            // Check each centroid to find the nearest one
+            for (size_t j = 1; j < numClusters; j++) {
+                dist = fabs(data[i] - centroids[j]);
+                if (dist < minDist) {
+                    minDist = dist;
+                    labelMatch = j;
                 }
             }
-            if (labels[i] != best_cluster) {
-                labels[i] = best_cluster;
-                changes++;
+
+            // Update label if the nearest centroid has changed
+            if (labels[i] != labelMatch) {
+                labels[i] = labelMatch;
+                changes++;  // Increment changes count
             }
         }
 
-        // Check for convergence
-        if (changes == 0) break;
+        // Step 3: Check for convergence
+        if (changes == 0) {
+            break;  // Stop if no points changed clusters
+        } else {
+            // Reset sums and counts for recalculating centroids
+            memset(sumCentroids, 0, sizeof(sumCentroids));
+            memset(numPointsPerCentroid, 0, sizeof(numPointsPerCentroid));
 
-        // Update centroids
-        float sum[k];
-        int count[k];
-        memset(sum, 0, sizeof(sum));
-        memset(count, 0, sizeof(count));
+            // Accumulate data points for each centroid
+            for (size_t i = 0; i < NDFT; i++) {
+                sumCentroids[labels[i]] += data[i];  // Sum for the assigned cluster
+                numPointsPerCentroid[labels[i]]++;  // Count points in each cluster
+            }
 
-        for (int i = 0; i < N; i++) {
-            sum[labels[i]] += data[i];
-            count[labels[i]]++;
-        }
-
-        for (int j = 0; j < k; j++) {
-            if (count[j] > 0) {
-                centroids[j] = sum[j] / count[j];
+            // Step 4: Update centroids as the mean of assigned points
+            for (size_t j = 0; j < numClusters; j++) {
+                if (numPointsPerCentroid[j] > 0) {  // Avoid division by zero
+                    centroids[j] = sumCentroids[j] / numPointsPerCentroid[j];
+                }
             }
         }
     }
@@ -246,7 +259,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        int k = atoi(argv[5]);           // Number of clusters
+        int numClusters = atoi(argv[5]);           // Number of clusters
         int max_iter = atoi(argv[6]);    // Max iterations
 
         compute_dft(inputBuffer, outputBuffer, NDFT);
@@ -254,7 +267,7 @@ int main(int argc, char *argv[]) {
         // Allocate memory for squared magnitude, labels, and centroids
         float *magnitude = (float*) malloc(sizeof(float) * NDFT);
         int *labels = (int*) malloc(sizeof(int) * NDFT);
-        float *centroids = (float*) malloc(sizeof(float) * k);
+        float *centroids = (float*) malloc(sizeof(float) * numClusters);
 
         if (!magnitude || !labels || !centroids) {
             printf("Memory allocation failed for K-means.\n");
@@ -267,7 +280,8 @@ int main(int argc, char *argv[]) {
         }
 
         compute_squared_magnitude(outputBuffer, magnitude, NDFT);
-        k_means(magnitude, NDFT, k, max_iter, labels, centroids);
+        //compute_magnitude_dB(outputBuffer, magnitude, NDFT);
+        compute_clusters(magnitude, NDFT, numClusters, max_iter, labels, centroids);
 
         // Save the K-means results to CSV
         save_kmeans_to_csv(output_file, magnitude, labels, NDFT);
