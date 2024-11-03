@@ -22,6 +22,9 @@ circ_buffer = np.zeros(buffer_size)
 write_idx = 0
 stft_mat = np.zeros((num_fft_bins, num_ffts))
 
+# Initialize global variables for plotting
+fig, ax, img = None, None, None
+
 # Read current frame form circular buffer
 def get_frame():
     # Read indices for start and stop
@@ -46,12 +49,13 @@ def compute_windowed_fft(frame):
 def process_frame(indata,frames,time, status):
     if status:
         print(status)
+    # Modification of global variables
+    global write_idx, circ_buffer, stft_mat
     
     # Left/rigth channel
     # Number of channels must be set to two!
     mono_channel = indata[:, 1]
     print("Number of new audio samples: ", frames)
-    global write_idx, circ_buffer, stft_mat
 
     # Write audio samples (hop_size) to circular buffer
     for sample in mono_channel:
@@ -79,7 +83,7 @@ def main():
     #device_sample_rate = device_info['default_samplerate']
     #print(f"Default sample rate: {device_sample_rate} Hz")
 
-    # Initialize animation
+    # Initialize animation plot
     fig, ax = plt.subplots()
     img = ax.imshow(stft_mat, aspect='auto', origin='lower', cmap='viridis', 
                     extent=[time_vector[0], time_vector[-1], frequency_vector[0], frequency_vector[-1]])
@@ -90,9 +94,13 @@ def main():
     ax.set_ylabel("Frequency (Hz)")
 
     # Stream audio
-    with sd.InputStream(samplerate=fs, channels=2, blocksize=hop_size, callback=process_frame):
-        ani = animation.FuncAnimation(fig, lambda x: img.set_array(stft_mat), interval=12, cache_frame_data=False)
-        plt.show()
+    try:
+        with sd.InputStream(samplerate=fs, channels=2, blocksize=hop_size, callback=process_frame):
+            ani = animation.FuncAnimation(fig, lambda x: img.set_array(stft_mat), interval=12, cache_frame_data=False)
+            plt.show()
+    except Exception as e:
+        print(f"Error with audio stream: {e}")
+
 
 if __name__ == "__main__":
     main()
