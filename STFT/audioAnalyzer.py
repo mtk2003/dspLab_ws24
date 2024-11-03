@@ -50,7 +50,7 @@ def process_frame(indata,frames,time, status):
     if status:
         print(status)
     # Modification of global variables
-    global write_idx, circ_buffer, stft_mat
+    global write_idx, circ_buffer, stft_mat, img
     
     # Left/rigth channel
     # Number of channels must be set to two!
@@ -100,7 +100,6 @@ def main():
             plt.show()
     except Exception as e:
         print(f"Error with audio stream: {e}")
-
 
 if __name__ == "__main__":
     main()
