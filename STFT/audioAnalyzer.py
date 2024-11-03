@@ -5,8 +5,8 @@ import sounddevice as sd
 
 # STFT Parameters
 fs = 48000  
-frame_size = 1024      
-overlap = 512         
+frame_size = 1024     
+overlap = 512        
 hop_size = frame_size - overlap  
 num_ffts = 400      
 num_fft_bins = frame_size // 2   
@@ -41,7 +41,8 @@ def compute_windowed_fft(frame):
     w = np.hamming(len(frame))
     #w = np.ones_like(frame)
     windowed_signal = frame * w
-    amplitude_spec = np.abs(np.fft.fft(windowed_signal))[:num_fft_bins]
+    #amplitude_spec = np.abs(np.fft.fft(windowed_signal))[:num_fft_bins]
+    amplitude_spec = 20*np.log10(np.abs(np.fft.fft(windowed_signal))[:num_fft_bins])
     return amplitude_spec
 
 # Process callback. Called each time new hop_size samples are available
@@ -86,7 +87,7 @@ def main():
     # Initialize animation plot
     fig, ax = plt.subplots()
     img = ax.imshow(stft_mat, aspect='auto', origin='lower', cmap='viridis', 
-                    extent=[time_vector[0], time_vector[-1], frequency_vector[0], frequency_vector[-1]])
+                    extent=[time_vector[0], time_vector[-1], frequency_vector[0], frequency_vector[-1]], vmin=-50, vmax=0)
     cbar = plt.colorbar(img, ax=ax)
     cbar.set_label("Amplitude Spectrum")
     ax.set_title("Real-Time Spectrogram")
