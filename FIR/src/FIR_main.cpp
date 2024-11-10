@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     // Process audio file in chunks
     while ((num_read = sf_read_float(infile, inputChunk, nSamples)) > 0) {
         processSignal( inputChunk, outputChunk, firCoeffs, buffer,
-        num_read,numFIRCoeffs);
+        num_read,numFIRCoeffs, bufferSize);
         sf_write_float(outfile, outputChunk, num_read);
     }
 

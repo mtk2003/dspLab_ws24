@@ -4,6 +4,6 @@
 #include <string.h>
 
 void processSignal( float *input, float *output, float *firCoeffs, float *buffer,
-       int nSamples, int numFIRCoeffs );
+       int nSamples, int numFIRCoeffs, int bufferSize);
 
 #endif

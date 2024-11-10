@@ -2,9 +2,8 @@
 
 // Circular buffer FIR Filtering
 void processSignal(float *inputDataChunk, float *outputDataChunk, float *firCoeffs, float *buffer,
-                   int numSamples, int numFIRCoeffs) {
+                   int numSamples, int numFIRCoeffs, int bufferSize) {
     static int bufferIndex = 0;  
-    int bufferSize = numSamples + numFIRCoeffs - 1;
 
     // Process each sample in the input chunk
     for (int n = 0; n < numSamples; n++) {
