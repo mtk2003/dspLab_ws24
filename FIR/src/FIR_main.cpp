@@ -5,7 +5,6 @@
 #include "../include/data.h"
 #include "../include/fir.h"
 
-
 void cleanup(float *coeffs, float *buffer, float *inputChunk, float *outputChunk, SNDFILE *infile, SNDFILE *outfile);
 
 // Cleanup 
@@ -62,7 +61,7 @@ int main(int argc, char *argv[]) {
     infile = sf_open(inputFile, SFM_READ, &sfinfo);
     if (!infile) {
         fprintf(stderr, "Could not open input file: %s\n", inputFile);
-        cleanup(firCoeffs, buffer, inputChunk, outputChunk, infile, NULL);  // Pass infile which is NULL
+        cleanup(firCoeffs, buffer, inputChunk, outputChunk, infile, NULL);  
         return -1;
     }
 
@@ -70,11 +69,12 @@ int main(int argc, char *argv[]) {
     outfile = sf_open(outputFile, SFM_WRITE, &sfinfo);
     if (!outfile) {
         fprintf(stderr, "Could not open output file: %s\n", outputFile);
-        cleanup(firCoeffs, buffer, inputChunk, outputChunk, infile, outfile); // outfile is NULL here
+        cleanup(firCoeffs, buffer, inputChunk, outputChunk, infile, outfile); 
         return -1;
     }
 
     // Process audio file in chunks
+    // num_read is always <= nSamples
     while ((num_read = sf_read_float(infile, inputChunk, nSamples)) > 0) {
         processSignal( inputChunk, outputChunk, firCoeffs, buffer,
         num_read,numFIRCoeffs, bufferSize);

@@ -6,8 +6,8 @@ import os
 
 # Filter design parameters
 fs = 48e3  
-cutoff_freq = 4e3  
-filter_order = 64  
+cutoff_freq = 3e3  
+filter_order = 128 
 nfft = 1024  
 firCoeffsFile = os.path.join(os.path.dirname(__file__), '../data/firCoeffsNew.csv')  
 
