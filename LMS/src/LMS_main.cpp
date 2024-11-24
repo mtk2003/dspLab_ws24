@@ -31,7 +31,6 @@ int main(int argc, char *argv[]) {
 
     // Initialize data arrays
     float *adaptiveCoeffs = (float *)malloc(numLMSCoeffs * sizeof(float));
-    float *pastSamples = (float *)malloc(numLMSCoeffs * sizeof(float));  // History of reference signal
     float *inputChunk = (float *)malloc(nSamples * sizeof(float));
     float *outputChunk = (float *)malloc(nSamples * sizeof(float));
     SNDFILE *infile = NULL;
@@ -40,7 +39,7 @@ int main(int argc, char *argv[]) {
     sf_count_t num_read;
 
     // Check memory allocation
-    if (!adaptiveCoeffs || !pastSamples || !inputChunk || !outputChunk) {
+    if (!adaptiveCoeffs || !inputChunk || !outputChunk) {
         fprintf(stderr, "Failed to allocate memory\n");
         cleanup(adaptiveCoeffs, inputChunk, outputChunk, NULL, NULL);
         return -1;
