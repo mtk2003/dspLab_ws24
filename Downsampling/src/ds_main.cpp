@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     double fmix = atof(argv[7]);
 
     // Validate arguments
-    if (numFIRCoeffs <= 0 || nSamplesPerChunk <= 0 || downSamplingFactor <= 0 || fmix <= 0) {
+    if (numFIRCoeffs <= 0 || nSamplesPerChunk <= 0 || downSamplingFactor <= 0 || fmix < 0) {
         fprintf(stderr, "Error: Invalid arguments. Ensure all values are positive.\n");
         return 1;
     }
@@ -87,10 +87,10 @@ int main(int argc, char *argv[]) {
     // num_read is always <= nSamplesPerChunk
     int num_read = 0;
     int num_processed = 0;
-    int num_total = 0;
+    //int num_total = 0;
     while ((num_read = read_chunk(inputFile, inputChunk, nSamplesPerChunk)) > 0) {
-        num_total = num_total + num_read;
-        fprintf(stdout,"Samples processed %d\n", num_total);
+        //num_total = num_total + num_read;
+        //fprintf(stdout,"Samples processed %d\n", num_total);
         num_processed = processSignal( inputChunk, outputChunk, firCoeffs, buffer,
         num_read,numFIRCoeffs, bufferSize, downSamplingFactor, fmix);
         write_chunk(outputFile, outputChunk, num_processed);
