@@ -59,7 +59,7 @@ def process_dct(signal, chunk_size, overlap, compression_ratio, plot_coefficient
         normalization_factor[start_idx:end_idx] += 1  # Count contributions from overlapping chunks
 
     # Normalize to compensate for overlapping contributions
-    #reconstructed_signal /= normalization_factor
+    reconstructed_signal /= normalization_factor
     return reconstructed_signal
 
 # Plot DCT coefficients for a single chunk
