@@ -1,0 +1,22 @@
+[project]
+name = "dct"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Michael Kohler",email = "m.kohler@mail.de"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy (>=2.2.1,<3.0.0)",
+    "matplotlib (>=3.10.0,<4.0.0)",
+    "soundfile (>=0.13.0,<0.14.0)",
+    "sounddevice (>=0.5.1,<0.6.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dct = "dct.main:main"
